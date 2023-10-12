@@ -1,0 +1,59 @@
+npm init -y
+npm install axios cheerio
+const axios = require('axios');
+const cheerio = require('cheerio');
+const { WordCloud } = require('nodejs-wordcloud');
+
+// 获取维基百科数据科学页面
+axios.get('https://en.wikipedia.org/wiki/Data_science')
+  .then(response => {
+    // 使用cheerio解析HTML内容
+    const $ = cheerio.load(response.data);
+
+    // 提取段落文本
+    const paragraphs = [];
+    $('p').each((index, element) => {
+      paragraphs.push($(element).text());
+    });
+
+    // 将文本合并成一个字符串
+    const text = paragraphs.join(' ');
+
+    // 提取关键字
+    const keywords = extractKeywords(text);
+
+    // 可视化关键字
+    visualizeKeywords(keywords);
+  })
+  .catch(error => {
+    console.log('Error:', error);
+  });
+
+// 提取关键字的函数
+function extractKeywords(text) {
+  // 在这里添加你的关键字提取逻辑
+  // 可以使用NLP库（例如Natural、NLP.js等）来处理文本和提取关键字
+}
+
+// 可视化关键字的函数
+function visualizeKeywords(keywords) {
+  const wordcloud = new WordCloud({
+    fontFamily: 'Arial',
+    fontWeight: 'bold',
+    color: 'random-light',
+    backgroundColor: 'black',
+    width: 800,
+    height: 600,
+    padding: 2
+  });
+
+  // 生成关键字词云
+  wordcloud.start(keywords, (err, words) => {
+    if (err) {
+      console.log('Error:', err);
+    } else {
+      console.log(words);
+      // 在这里添加你的其他可视化逻辑，例如生成词频图等
+    }
+  });
+}
